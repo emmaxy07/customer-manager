@@ -10,10 +10,6 @@ const Customer = mongoose.model('Customer', Schema({
         type: String,
         required: true
     },
-    email: {
-        type: String,
-        required: true
-    },
     age: {
         type: Number,
         max: 80,
@@ -21,7 +17,10 @@ const Customer = mongoose.model('Customer', Schema({
         isActive: {
             type: Boolean,
             default: true
-        }
+        },
+    },
+    imageUrl: {
+        type: String
     }
 }))
 

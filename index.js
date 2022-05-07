@@ -1,65 +1,64 @@
-const express = require('express');
-const mongoose = require('mongoose');
+const express = require("express");
+const mongoose = require("mongoose");
 const Customer = require('./models/customer');
-
-mongoose.connect('mongodb://127.0.0.1:27017/customer_manager_db');
+const cors = require('cors');
+mongoose.connect("mongodb://127.0.0.1:27017/customer_manager_db");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send('Welcome to Customer Manager')
-})
+app.get("/customers", async (req, res) => {
+  // const _id = req.params.id;
+  const customers = await Customer.find();
 
-// GET /customers
-app.get('/customers', async (req, res) => {
-    const Customers = await Customer.find()
-    res.json(Customers)
-})
+  res.json(customers);
+});
 
-// GET /customers/:id
-app.get('/customers/:id', async (req, res) => {
-    const _id = req.params.id;
-    const Customers = await Customer.findById(_id);
+//GET /customers/id
+app.get("/customers/:id", async (req, res) => {
+  const _id = req.params.id;
+  const customer = await Customer.findById(_id);
+  res.json(customer);
+});
 
-    res.json(Customers)
-})
 
-// GET /customers by name
-app.get('/customersbyname', async (req, res) => {
-    const name = req.query.name;
-    const Customers = await Customer.find({ name: name});
+//GET /customers/byname
+app.get("/customersbyname", async (req, res) => {
+  const name = req.query.name;
+  const customer = await Customer.find(name);
+  res.json(customer);
+});
 
-    res.json(Customers)
-})
+//POST /customers/id
+app.post("/customers", async (req, res) => {
 
-// POST /customer
-app.post('/customers', async (req, res) => {
+  console.log('/customers', req.body);
 
-    const customer = new Customer(req.body);
+  const customer = new Customer(req.body);
+  // const customer = req.body;
+  await customer.save();
+  res.json(customer);
+});
 
-    await customer.save();
+//PATCH or UPDATE /customers/id
+app.patch("/customers/:id", async (req, res) => {
+  const _id = req.params.id;
+  // const customer = req.body;
 
-    res.json(customer);
-})
+  const customer = await Customer.findByIdAndUpdate(_id, req.body);
 
-// PATCH /customer
-app.patch('/customers/:id', async (req, res) => {
-    const _id = req.params.id;
+  res.json(customer);
+});
 
-    const Customer = await Customer.findByIdAndUpdate(_id. req.body);
+//DELETE /customers/id
+app.delete("/customers/:id", async (req, res) => {
+  const _id = req.params.id;
 
-    res.json(Customer);
-})
+   const customer = await Customer.findByIdAndRemove(_id, req.body);
 
-// DELETE /customer/:id
-app.delete('/customers/:id', async (req, res) => {
-    const _id = req.params.id;
+  res.json(customer);
+});
 
-    const Customer = await Customer.findByIdAndRemove(_id);
-
-    res.json(Customer)
-})
-
-app.listen(3002, () => console.log('Server running on port 3002'))
+app.listen(5000, () => console.log("Server is up and running at port 5000!!!"));
